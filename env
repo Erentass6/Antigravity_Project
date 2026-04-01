@@ -1,0 +1,4 @@
+MONGO_URI=mongodb+srv://eren:Ostim2026@cluster0.vzfztfr.mongodb.net/AntigravityDB?retryWrites=true&w=majority
+MONGODB_API_KEY=al-5Yyd-BpIVJU382TDHZOTSge9axfi8sTck9d1M3GMeKL
+APP_ENV=development
+DEBUG=True

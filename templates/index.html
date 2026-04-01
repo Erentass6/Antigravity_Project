@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Antigravity — Command Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════
+   ANTIGRAVITY — ZERO-G DESIGN SYSTEM
+   ══════════════════════════════════════ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-void:       #05060f;
+  --bg-panel:      rgba(8, 10, 28, 0.82);
+  --bg-card:       rgba(12, 15, 38, 0.65);
+  --bg-input:      rgba(6, 8, 22, 0.7);
+  --neon-purple:   #b44aff;
+  --neon-blue:     #00d4ff;
+  --neon-cyan:     #00ffcc;
+  --neon-red:      #ff3366;
+  --neon-yellow:   #ffe066;
+  --neon-violet:   #8b5cf6;
+  --text:          #cdd6e4;
+  --text-bright:   #eef2f7;
+  --text-dim:      #4a5568;
+  --border:        rgba(180, 74, 255, 0.18);
+  --border-blue:   rgba(0, 212, 255, 0.18);
+  --glow-purple:   0 0 15px rgba(180,74,255,0.35), 0 0 50px rgba(180,74,255,0.1);
+  --glow-blue:     0 0 15px rgba(0,212,255,0.35), 0 0 50px rgba(0,212,255,0.1);
+  --glow-red:      0 0 12px rgba(255,51,102,0.5);
+  --font-display:  'Orbitron', sans-serif;
+  --font-body:     'Exo 2', sans-serif;
+  --font-mono:     'Share Tech Mono', monospace;
+  --radius:        4px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg-void);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Starfield background ────────── */
+#starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+#starfield canvas { width: 100%; height: 100%; }
+
+/* ── Scan line ───────────────────── */
+.scan-line {
+  position: fixed; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent 15%, rgba(180,74,255,0.07) 50%, transparent 85%);
+  z-index: 1; pointer-events: none;
+  animation: scanDown 10s linear infinite;
+}
+@keyframes scanDown { from { top: -2px; } to { top: 100vh; } }
+
+/* ── Grid noise overlay ──────────── */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: radial-gradient(rgba(180,74,255,0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* ── Layout wrapper ──────────────── */
+.app-shell {
+  position: relative;
+  z-index: 2;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 28px 60px;
+}
+
+/* ══════════════════════════════════
+   HEADER
+   ══════════════════════════════════ */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+.brand {
+  display: flex; align-items: center; gap: 14px;
+}
+.brand-icon {
+  width: 38px; height: 38px;
+  border: 2px solid var(--neon-purple);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  box-shadow: var(--glow-purple);
+  animation: pulse-ring 3s ease-in-out infinite;
+}
+@keyframes pulse-ring {
+  0%, 100% { box-shadow: var(--glow-purple); }
+  50% { box-shadow: 0 0 25px rgba(180,74,255,0.5), 0 0 70px rgba(180,74,255,0.2); }
+}
+.brand h1 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.brand .tagline {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+}
+
+.user-section {
+  display: flex; align-items: center; gap: 16px;
+}
+.user-badge {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--neon-cyan);
+  letter-spacing: 1px;
+}
+.user-badge span { color: var(--text-dim); }
+.logout-btn {
+  background: none; border: 1px solid rgba(255,51,102,0.3);
+  color: var(--neon-red); font-family: var(--font-mono);
+  font-size: 11px; padding: 6px 14px; border-radius: var(--radius);
+  cursor: pointer; letter-spacing: 1px; transition: all 0.3s;
+  text-decoration: none;
+}
+.logout-btn:hover {
+  background: rgba(255,51,102,0.1); box-shadow: var(--glow-red);
+}
+
+/* ══════════════════════════════════
+   STATS ROW
+   ══════════════════════════════════ */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.stat-card:hover {
+  border-color: rgba(180,74,255,0.4);
+  box-shadow: var(--glow-purple);
+}
+.stat-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.stat-card:nth-child(1)::before { background: linear-gradient(90deg, var(--neon-purple), transparent); }
+.stat-card:nth-child(2)::before { background: linear-gradient(90deg, var(--neon-red), transparent); }
+.stat-card:nth-child(3)::before { background: linear-gradient(90deg, var(--neon-yellow), transparent); }
+.stat-card:nth-child(4)::before { background: linear-gradient(90deg, var(--neon-cyan), transparent); }
+.stat-card .label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.stat-card .value {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+}
+.stat-card:nth-child(1) .value { color: var(--neon-purple); }
+.stat-card:nth-child(2) .value { color: var(--neon-red); }
+.stat-card:nth-child(3) .value { color: var(--neon-yellow); }
+.stat-card:nth-child(4) .value { color: var(--neon-cyan); }
+
+/* ══════════════════════════════════
+   SECTION PANELS
+   ══════════════════════════════════ */
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(16px);
+  margin-bottom: 28px;
+  overflow: hidden;
+}
+.panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.panel-header h2 {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--text-bright);
+  text-transform: uppercase;
+  display: flex; align-items: center; gap: 10px;
+}
+.panel-header h2 .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--neon-purple);
+  box-shadow: 0 0 8px var(--neon-purple);
+  animation: blink 2s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.panel-body { padding: 24px; }
+
+/* ══════════════════════════════════
+   ADD PRODUCT FORM
+   ══════════════════════════════════ */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+.field label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.field input, .field select {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  color: var(--text-bright);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.field input:focus {
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 12px rgba(0,212,255,0.2), inset 0 0 6px rgba(0,212,255,0.04);
+}
+.field input::placeholder { color: var(--text-dim); }
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+  gap: 12px;
+}
+
+/* ── Buttons ─────────────────────── */
+.btn {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 10px 24px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 1px solid transparent;
+}
+.btn-primary {
+  background: linear-gradient(135deg, rgba(180,74,255,0.2), rgba(0,212,255,0.1));
+  border-color: var(--neon-purple);
+  color: var(--neon-purple);
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, rgba(180,74,255,0.35), rgba(0,212,255,0.18));
+  box-shadow: var(--glow-purple);
+  color: #fff;
+}
+.btn-ai {
+  background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,255,204,0.08));
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+.btn-ai:hover {
+  background: linear-gradient(135deg, rgba(0,212,255,0.3), rgba(0,255,204,0.15));
+  box-shadow: var(--glow-blue);
+  color: #fff;
+}
+.btn-danger {
+  background: none;
+  border-color: rgba(255,51,102,0.3);
+  color: var(--neon-red);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 5px 10px;
+  letter-spacing: 0;
+}
+.btn-danger:hover { background: rgba(255,51,102,0.1); box-shadow: var(--glow-red); }
+
+/* ══════════════════════════════════
+   INVENTORY TABLE
+   ══════════════════════════════════ */
+.table-wrap { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+thead th {
+  text-align: left;
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+tbody tr {
+  border-bottom: 1px solid rgba(180,74,255,0.06);
+  transition: all 0.3s;
+}
+tbody tr:hover {
+  background: rgba(180,74,255,0.06);
+  box-shadow: inset 3px 0 0 var(--neon-purple);
+}
+tbody td {
+  padding: 12px 14px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.code-cell {
+  color: var(--neon-blue);
+  font-weight: 600;
+}
+
+/* Status badges */
+.badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+.badge-critical { background: rgba(255,51,102,0.15); color: var(--neon-red); border: 1px solid rgba(255,51,102,0.3); }
+.badge-warning  { background: rgba(255,224,102,0.1);  color: var(--neon-yellow); border: 1px solid rgba(255,224,102,0.25); }
+.badge-overstock{ background: rgba(139,92,246,0.12);  color: var(--neon-violet); border: 1px solid rgba(139,92,246,0.3); }
+.badge-healthy  { background: rgba(0,255,204,0.08);   color: var(--neon-cyan); border: 1px solid rgba(0,255,204,0.2); }
+.badge-nominal  { background: rgba(0,212,255,0.08);   color: var(--neon-blue); border: 1px solid rgba(0,212,255,0.2); }
+
+.empty-state {
+  text-align: center; padding: 48px 20px;
+  color: var(--text-dim); font-size: 14px;
+}
+
+/* ══════════════════════════════════
+   AI TERMINAL
+   ══════════════════════════════════ */
+.ai-terminal {
+  background: #020408;
+  border: 1px solid rgba(0,212,255,0.2);
+  border-radius: var(--radius);
+  min-height: 260px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding: 20px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.8;
+  position: relative;
+}
+.ai-terminal::-webkit-scrollbar { width: 5px; }
+.ai-terminal::-webkit-scrollbar-track { background: transparent; }
+.ai-terminal::-webkit-scrollbar-thumb { background: rgba(180,74,255,0.3); border-radius: 4px; }
+
+.ai-terminal .line { white-space: pre-wrap; word-break: break-word; }
+.ai-terminal .line-system  { color: var(--text-dim); }
+.ai-terminal .line-critical{ color: var(--neon-red); }
+.ai-terminal .line-warning { color: var(--neon-yellow); }
+.ai-terminal .line-overstock{ color: var(--neon-violet); }
+.ai-terminal .line-healthy { color: var(--neon-cyan); }
+.ai-terminal .line-header  {
+  color: var(--neon-purple);
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+.ai-terminal .cursor-blink {
+  display: inline-block; width: 8px; height: 14px;
+  background: var(--neon-cyan);
+  animation: caret 1s step-end infinite;
+  vertical-align: middle; margin-left: 2px;
+}
+@keyframes caret { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.ai-placeholder {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  height: 200px; color: var(--text-dim);
+  gap: 12px;
+}
+.ai-placeholder .icon { font-size: 32px; opacity: 0.4; }
+
+/* ── Toast ───────────────────────── */
+.toast {
+  position: fixed; bottom: 28px; right: 28px;
+  padding: 14px 22px;
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { background: rgba(0,255,204,0.12); border: 1px solid rgba(0,255,204,0.3); color: var(--neon-cyan); }
+.toast.error   { background: rgba(255,51,102,0.12); border: 1px solid rgba(255,51,102,0.3); color: var(--neon-red); }
+
+/* ── Loading spinner ─────────────── */
+.spinner {
+  display: inline-block; width: 14px; height: 14px;
+  border: 2px solid rgba(0,212,255,0.2);
+  border-top-color: var(--neon-cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-right: 6px; vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Responsive ──────────────────── */
+@media (max-width: 768px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .form-grid { grid-template-columns: 1fr; }
+  .top-bar { flex-direction: column; gap: 12px; text-align: center; }
+  .app-shell { padding: 16px 14px 40px; }
+}
+</style>
+</head>
+<body>
+
+<div class="scan-line"></div>
+<div id="starfield"></div>
+
+<div class="app-shell">
+
+  <!-- ══ HEADER ════════════════════ -->
+  <header class="top-bar">
+    <div class="brand">
+      <div class="brand-icon">🚀</div>
+      <div>
+        <h1>ANTIGRAVITY</h1>
+        <div class="tagline">Zero-G Inventory Command Deck</div>
+      </div>
+    </div>
+    <div class="user-section">
+      <div class="user-badge"><span>Commander //</span> {{ username }}</div>
+      <a href="/logout" class="logout-btn">⏻ LOGOUT</a>
+    </div>
+  </header>
+
+  <!-- ══ STATS ═════════════════════ -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="label">Total Products</div>
+      <div class="value" id="statTotal">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Critical</div>
+      <div class="value" id="statCritical">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Warning</div>
+      <div class="value" id="statWarning">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Healthy</div>
+      <div class="value" id="statHealthy">—</div>
+    </div>
+  </div>
+
+  <!-- ══ ADD PRODUCT ═══════════════ -->
+  <section class="panel">
+    <div class="panel-header">
+      <h2><span class="dot"></span>Load New Cargo</h2>
+    </div>
+    <div class="panel-body">
+      <div class="form-grid">
+        <div class="field"><label>Product Code</label><input type="text" id="fCode" placeholder="SKU-001"></div>
+        <div class="field"><label>Product Name</label><input type="text" id="fName" placeholder="USB-C Cable"></div>
+        <div class="field"><label>Category</label><input type="text" id="fCat" placeholder="Electronics"></div>
+        <div class="field"><label>Current Stock</label><input type="number" id="fStock" placeholder="0" min="0"></div>
+        <div class="field"><label>Daily Sales (avg)</label><input type="number" id="fSales" placeholder="0" min="0" step="0.1"></div>
+        <div class="field"><label>Lead Time (days)</label><input type="number" id="fLead" placeholder="0" min="0"></div>
+        <div class="field"><label>Unit Price (₺)</label><input type="number" id="fPrice" placeholder="0.00" min="0" step="0.01"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="addProduct()">+ Load Into Orbit</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ INVENTORY TABLE ═══════════ -->
+  <section class="panel">
+    <div class="panel-header">
+      <h2><span class="dot"></span>Cargo Bay — Inventory</h2>
+      <button class="btn btn-primary" onclick="loadProducts()" style="padding:7px 16px; font-size:10px;">↻ Refresh</button>
+    </div>
+    <div class="panel-body" style="padding:0;">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th><th>Name</th><th>Category</th>
+              <th>Stock</th><th>Daily Sales</th><th>Lead Time</th>
+              <th>Price</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="invBody">
+            <tr><td colspan="9" class="empty-state">Initializing cargo bay scan...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ AI ADVISOR ════════════════ -->
+  <section class="panel">
+    <div class="panel-header">
+      <h2><span class="dot" style="background:var(--neon-cyan); box-shadow:0 0 8px var(--neon-cyan);"></span>AI Stock Advisor</h2>
+      <button class="btn btn-ai" id="aiBtn" onclick="runAIScan()">⚡ Initiate AI Scan</button>
+    </div>
+    <div class="panel-body" style="padding:0;">
+      <div class="ai-terminal" id="aiTerminal">
+        <div class="ai-placeholder">
+          <div class="icon">🤖</div>
+          <div>AI Advisor standby — press <strong style="color:var(--neon-cyan)">Initiate AI Scan</strong> to begin.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════
+   STARFIELD ENGINE
+   ══════════════════════════════════════ */
+(function(){
+  const c = document.createElement('canvas');
+  document.getElementById('starfield').appendChild(c);
+  const ctx = c.getContext('2d');
+  let W, H, stars = [], nebula = [];
+
+  function resize(){
+    W = c.width = innerWidth;
+    H = c.height = innerHeight;
+    init();
+  }
+
+  function init(){
+    stars = [];
+    for(let i = 0; i < 280; i++){
+      stars.push({
+        x: Math.random()*W, y: Math.random()*H,
+        r: Math.random()*1.3+0.2,
+        vy: Math.random()*0.3+0.04,
+        o: Math.random()*0.7+0.15,
+        flicker: Math.random()*0.02
+      });
+    }
+    nebula = [];
+    for(let i = 0; i < 3; i++){
+      nebula.push({
+        x: Math.random()*W, y: Math.random()*H,
+        rx: 120+Math.random()*180, ry: 60+Math.random()*100,
+        hue: i===0 ? 270 : i===1 ? 200 : 310,
+        o: 0.018+Math.random()*0.015
+      });
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // Nebula blobs
+    nebula.forEach(n => {
+      const g = ctx.createRadialGradient(n.x,n.y,0, n.x,n.y, n.rx);
+      g.addColorStop(0, 'hsla('+n.hue+',80%,50%,'+n.o+')');
+      g.addColorStop(1, 'transparent');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.ellipse(n.x, n.y, n.rx, n.ry, 0, 0, Math.PI*2);
+      ctx.fill();
+    });
+    // Stars
+    const t = Date.now()*0.001;
+    stars.forEach(s => {
+      const flick = Math.sin(t*2 + s.x)*s.flicker;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(200,220,255,'+(s.o+flick)+')';
+      ctx.fill();
+      s.y += s.vy;
+      if(s.y > H){ s.y = -2; s.x = Math.random()*W; }
+    });
+    requestAnimationFrame(draw);
+  }
+
+  addEventListener('resize', resize);
+  resize();
+  draw();
+})();
+
+
+/* ══════════════════════════════════════
+   API HELPERS
+   ══════════════════════════════════════ */
+function showToast(msg, type){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(()=> t.classList.remove('show'), 3500);
+}
+
+async function api(url, opts){
+  const res = await fetch(url, opts);
+  return res.json();
+}
+
+/* quick status calc for table badges */
+function calcStatus(p){
+  const s = p.current_stock, d = p.daily_sales, l = p.lead_time_days;
+  if(!d || d <= 0) return {cls:'nominal', label:'NOMINAL'};
+  const days = s / d;
+  if(days <= 3) return {cls:'critical', label:'CRITICAL'};
+  if(days <= 7) return {cls:'warning', label:'WARNING'};
+  if(s > d * l * 3) return {cls:'overstock', label:'OVERSTOCK'};
+  return {cls:'healthy', label:'HEALTHY'};
+}
+
+
+/* ══════════════════════════════════════
+   LOAD & RENDER PRODUCTS
+   ══════════════════════════════════════ */
+async function loadProducts(){
+  try {
+    const products = await api('/api/products');
+    const body = document.getElementById('invBody');
+
+    if(!products.length){
+      body.innerHTML = '<tr><td colspan="9" class="empty-state">Cargo bay is empty — load your first product above.</td></tr>';
+      updateStats(products);
+      return;
+    }
+
+    let html = '';
+    products.forEach(p => {
+      const st = calcStatus(p);
+      html += '<tr>'
+        + '<td class="code-cell">'+esc(p.product_code)+'</td>'
+        + '<td>'+esc(p.product_name)+'</td>'
+        + '<td>'+esc(p.category||'—')+'</td>'
+        + '<td>'+p.current_stock+'</td>'
+        + '<td>'+p.daily_sales+'</td>'
+        + '<td>'+p.lead_time_days+' d</td>'
+        + '<td>₺'+Number(p.unit_price||0).toFixed(2)+'</td>'
+        + '<td><span class="badge badge-'+st.cls+'">'+st.label+'</span></td>'
+        + '<td><button class="btn-danger" onclick="deleteProduct(\''+esc(p.product_code)+'\')">✕</button></td>'
+        + '</tr>';
+    });
+    body.innerHTML = html;
+    updateStats(products);
+  } catch(e){
+    showToast('Failed to load inventory.', 'error');
+  }
+}
+
+function updateStats(products){
+  let c=0, w=0, h=0;
+  products.forEach(p => {
+    const st = calcStatus(p);
+    if(st.cls==='critical') c++;
+    else if(st.cls==='warning') w++;
+    else h++;
+  });
+  document.getElementById('statTotal').textContent    = products.length;
+  document.getElementById('statCritical').textContent  = c;
+  document.getElementById('statWarning').textContent   = w;
+  document.getElementById('statHealthy').textContent   = products.length - c - w;
+}
+
+function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+
+/* ══════════════════════════════════════
+   ADD PRODUCT
+   ══════════════════════════════════════ */
+async function addProduct(){
+  const data = {
+    product_code:   document.getElementById('fCode').value.trim(),
+    product_name:   document.getElementById('fName').value.trim(),
+    category:       document.getElementById('fCat').value.trim(),
+    current_stock:  document.getElementById('fStock').value,
+    daily_sales:    document.getElementById('fSales').value,
+    lead_time_days: document.getElementById('fLead').value,
+    unit_price:     document.getElementById('fPrice').value,
+  };
+
+  if(!data.product_code || !data.product_name){
+    showToast('Product code and name are required.', 'error'); return;
+  }
+
+  try {
+    const res = await api('/api/products', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(data)
+    });
+    if(res.ok){
+      showToast(res.msg, 'success');
+      ['fCode','fName','fCat','fStock','fSales','fLead','fPrice'].forEach(id => document.getElementById(id).value = '');
+      loadProducts();
+    } else {
+      showToast(res.msg, 'error');
+    }
+  } catch(e){ showToast('Connection lost.','error'); }
+}
+
+
+/* ══════════════════════════════════════
+   DELETE PRODUCT
+   ══════════════════════════════════════ */
+async function deleteProduct(code){
+  if(!confirm('Jettison "'+code+'" from cargo bay?')) return;
+  try {
+    const res = await api('/api/products/'+encodeURIComponent(code), {method:'DELETE'});
+    if(res.ok){ showToast(res.msg,'success'); loadProducts(); }
+    else { showToast(res.msg,'error'); }
+  } catch(e){ showToast('Connection lost.','error'); }
+}
+
+
+/* ══════════════════════════════════════
+   AI ADVISOR — TERMINAL TYPEWRITER
+   ══════════════════════════════════════ */
+async function runAIScan(){
+  const term = document.getElementById('aiTerminal');
+  const btn  = document.getElementById('aiBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Scanning...';
+  term.innerHTML = '';
+
+  // Boot sequence
+  const bootLines = [
+    {text:'ANTIGRAVITY AI v2.0 — Predictive Stock Advisor', cls:'line-header'},
+    {text:'Establishing neural link to inventory database...', cls:'line-system'},
+    {text:'Scanning cargo trajectories...', cls:'line-system'},
+    {text:'', cls:'line-system'},
+  ];
+
+  for(const l of bootLines){
+    await typeLine(term, l.text, l.cls, 18);
+  }
+
+  try {
+    const res = await api('/api/ai-scan');
+    if(!res.ok){ await typeLine(term, '!! ERROR: '+res.msg, 'line-critical', 12); return; }
+
+    const r = res.report;
+
+    await typeLine(term, '═══════════════════════════════════════════════', 'line-system', 4);
+    await typeLine(term, '  INVENTORY HEALTH REPORT', 'line-header', 15);
+    await typeLine(term, '═══════════════════════════════════════════════', 'line-system', 4);
+    await typeLine(term, '', 'line-system', 0);
+    await typeLine(term, '  Total Products Scanned : ' + r.total, 'line-system', 20);
+    await typeLine(term, '  🔴 Critical            : ' + r.critical_count, 'line-critical', 20);
+    await typeLine(term, '  🟡 Warning             : ' + r.warning_count, 'line-warning', 20);
+    await typeLine(term, '  🟣 Overstock           : ' + r.overstock_count, 'line-overstock', 20);
+    await typeLine(term, '  🟢 Healthy / Nominal   : ' + r.healthy_count, 'line-healthy', 20);
+    await typeLine(term, '', 'line-system', 0);
+
+    const actionItems = r.analyses.filter(a => a.status !== 'HEALTHY' && a.status !== 'NOMINAL');
+
+    if(actionItems.length){
+      await typeLine(term, '── ACTION REQUIRED ──────────────────────────', 'line-header', 8);
+      await typeLine(term, '', 'line-system', 0);
+
+      for(const item of r.analyses){
+        const cls = 'line-' + item.status.toLowerCase();
+        const lines = item.message.split('\n');
+        for(const line of lines){
+          await typeLine(term, line, cls, 10);
+        }
+        if(item.recommended_qty > 0){
+          await typeLine(term, '  📦 Suggested order: ' + item.recommended_qty + ' units | Reorder point: ' + item.reorder_point + ' units', cls, 12);
+        }
+        await typeLine(term, '', 'line-system', 0);
+      }
+    } else {
+      await typeLine(term, '', 'line-system', 0);
+      await typeLine(term, '✅ All systems nominal — no action required.', 'line-healthy', 15);
+    }
+
+    await typeLine(term, '═══════════════════════════════════════════════', 'line-system', 4);
+    await typeLine(term, 'Lojistik yükü optimize edildi — Zero-G efficiency achieved.', 'line-header', 18);
+    await typeLine(term, '═══════════════════════════════════════════════', 'line-system', 4);
+
+  } catch(e){
+    await typeLine(term, '!! CONNECTION LOST: '+e.message, 'line-critical', 12);
+  } finally {
+    // Add blinking cursor at end
+    const cur = document.createElement('span');
+    cur.className = 'cursor-blink';
+    term.appendChild(cur);
+    btn.disabled = false;
+    btn.innerHTML = '⚡ Initiate AI Scan';
+  }
+}
+
+function typeLine(container, text, cls, charDelay){
+  return new Promise(resolve => {
+    const div = document.createElement('div');
+    div.className = 'line ' + (cls||'');
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+
+    if(!text || charDelay <= 0){
+      div.textContent = text || '\u00A0';
+      resolve();
+      return;
+    }
+
+    let i = 0;
+    function tick(){
+      if(i < text.length){
+        div.textContent += text[i];
+        i++;
+        container.scrollTop = container.scrollHeight;
+        setTimeout(tick, charDelay);
+      } else {
+        resolve();
+      }
+    }
+    tick();
+  });
+}
+
+
+/* ══════════════════════════════════════
+   INIT
+   ══════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', loadProducts);
+</script>
+</body>
+</html>
