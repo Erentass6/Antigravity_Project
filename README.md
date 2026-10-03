@@ -1,57 +1,48 @@
-# 🛰️ Antigravity: Zero-G Inventory Engine
+# Antigravity — Inventory Prototype
 
-Antigravity is a **cloud-native, AI-powered inventory management system** designed to help businesses predict, optimize, and control their stock flow with precision.
+A small Flask and MongoDB inventory-management prototype. It includes account flows, product records, and a rule-based stock status estimate.
 
-Antigravity; işletmelerin stoklarını **önceden tahmin eden, optimize eden ve kontrol altına alan** bulut tabanlı yapay zeka destekli bir envanter yönetim sistemidir.
+> **Status:** learning project. The stock analysis is a simple heuristic, not a trained AI model. Authentication and deployment settings are not production hardened.
 
----
+## What it demonstrates
 
-## 🚀 Features
+- Flask routes for login, registration, dashboard, and product records
+- MongoDB persistence through PyMongo
+- A basic stock-risk calculation based on current stock, daily sales, and lead time
+- A small command-line entry point in `main.py`
 
-- **☁️ Cloud-Native Infrastructure**  
-  All data is securely stored in the cloud. No local dependency, no data loss risk.
+## Stack
 
-- **🤖 AI-Powered Forecasting**  
-  Predicts stock shortages before they happen using sales data and lead time analysis.
+Python · Flask · PyMongo · MongoDB · Jinja templates
 
-- **📊 Smart Decision Engine**  
-  Tells you _when_ and _how much_ to restock based on real-time insights.
+## Run locally
 
-- **🔄 Flexible Use Cases**  
-  Easily adaptable for:
-  - Industrial products
-  - Furniture stores
-  - Real estate tracking
-  - Hardware shops
+1. Install Python 3.10 or newer.
+2. Create and activate a virtual environment.
+3. Install dependencies:
 
-- **🌌 Modern UI (Cyberpunk Style)**  
-  Dark-mode focused interface for better concentration and usability.
+   ```bash
+   pip install -r requirements.txt
+   ```
 
----
+4. Copy `.env.example` to `.env`, then replace the sample `MONGO_URI` with a MongoDB connection string you control. Keep `.env` private; it is ignored by Git.
+5. Start the web application:
 
-## 🛠️ Tech Stack
+   ```bash
+   python app.py
+   ```
 
-- **Backend:** Python (Flask)
-- **Database:** MongoDB Atlas
-- **AI Engine:** Custom-built analysis system
-- **Environment:** dotenv
+6. Open <http://127.0.0.1:5001>.
 
----
+The optional CLI entry point is `python main.py`. Both entry points need a valid MongoDB connection.
 
-## ⚙️ Installation
+## Configuration
 
-### 1. Clone the repository
+- `MONGO_URI` — MongoDB connection string
+- `FLASK_DEBUG` — set to `1` only for local development; defaults off
 
-````bash
-git clone https://github.com/your-username/antigravity.git
-cd antigravity```
+Never commit live credentials. If a credential was previously committed, rotate it in the provider as well; deleting a file from the latest branch does not remove old Git history.
 
+## License
 
-2. Install Libraries: pip install flask pymongo python-dotenv
-
-Configuration- Add your MongoDB URI to the env or .env file: MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/
-
-Launch the Engine: python app.py
-
-Visit http://localhost:5001 in your browser.
-````
+No license has been specified yet.
