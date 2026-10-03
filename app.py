@@ -13,13 +13,15 @@ from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from dotenv import load_dotenv
 
-load_dotenv("env")
+load_dotenv(".env")
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 # ── MongoDB Bağlantısı ──────────────────────────────────────
 MONGO_URI = os.getenv("MONGO_URI")
+if not MONGO_URI:
+    raise RuntimeError("Set MONGO_URI in your local .env file (see .env.example).")
 client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
 db = client["antigravity_db"]
 users_coll = db["users"]
@@ -131,4 +133,4 @@ def logout():
 # 🚀 MOTORU 5001 PORTUNDA ÇALIŞTIR
 if __name__ == "__main__":
     print("🛰️  Antigravity Web Engine 5001 portunda ateşleniyor...")
-    app.run(debug=True, host="0.0.0.0", port=5001)
+    app.run(debug=os.getenv("FLASK_DEBUG") == "1", host="127.0.0.1", port=5001)
