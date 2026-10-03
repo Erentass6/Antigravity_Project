@@ -4,7 +4,7 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 
 # 1. Konfigürasyon ve env Yükleme
-load_dotenv("env")
+load_dotenv(".env")
 MONGO_URI = os.getenv("MONGO_URI")
 
 # 2. MongoDB Bağlantısı
